@@ -1,4 +1,4 @@
-filename = blink
+filename = mp1
 pcf_file = ../common/iceBlinkPico.pcf
 
 build:
