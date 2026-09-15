@@ -11,9 +11,9 @@ module top(
     logic [2:0] color_state = 0;
 
     initial begin
-        RGB_R = 1'b1;
-        RGB_G = 1'b0;
-        RGB_B = 1'b0;
+        RGB_R = 1'b0;
+        RGB_G = 1'b1;
+        RGB_B = 1'b1;
     end
 
     always_ff @(posedge clk) begin
@@ -22,21 +22,21 @@ module top(
             color_state = color_state==5 ? 0 : color_state+1;
 
             if (color_state <= 1 || color_state == 5) begin
-                RGB_R <= 1'b1;
-            end else begin
                 RGB_R <= 1'b0;
+            end else begin
+                RGB_R <= 1'b1;
             end
 
             if (color_state >= 1 && color_state <= 3) begin
-                RGB_G <= 1'b1;
-            end else begin
                 RGB_G <= 1'b0;
+            end else begin
+                RGB_G <= 1'b1;
             end
 
             if (color_state >= 3) begin
-                RGB_B <= 1'b1;
-            end else begin
                 RGB_B <= 1'b0;
+            end else begin
+                RGB_B <= 1'b1;
             end
 
         end else begin
