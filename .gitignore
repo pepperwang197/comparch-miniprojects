@@ -2,3 +2,5 @@
 *.asc
 *.json
 *.bin
+*.vcd
+fade
