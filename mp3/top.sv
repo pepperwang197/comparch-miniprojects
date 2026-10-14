@@ -16,9 +16,7 @@ module top(
     logic [7:0] green_data;
     logic [7:0] blue_data;
 
-    logic [5:0] pixel;
-    logic [4:0] frame;
-    logic [10:0] address;
+    logic pixel_value;
 
     logic [23:0] shift_reg = 24'd0;
     logic load_sreg;
@@ -26,37 +24,8 @@ module top(
     logic shift;
     logic ws2812b_out;
 
-    assign address = { frame, pixel };
-
-    // Instance sample memory for red channel
-    memory #(
-        .INIT_FILE      ("spiral/red.txt")
-    ) u1 (
-        .clk            (clk), 
-        .read_address   (address), 
-        .read_data      (red_data)
-    );
-
-    // Instance sample memory for green channel
-    memory #(
-        .INIT_FILE      ("spiral/green.txt")
-    ) u2 (
-        .clk            (clk), 
-        .read_address   (address), 
-        .read_data      (green_data)
-    );
-
-    // Instance sample memory for blue channel
-    memory #(
-        .INIT_FILE      ("spiral/blue.txt")
-    ) u3 (
-        .clk            (clk), 
-        .read_address   (address), 
-        .read_data      (blue_data)
-    );
-
     // Instance the WS2812B output driver
-    ws2812b u4 (
+    ws2812b driver (
         .clk            (clk), 
         .serial_in      (shift_reg[23]), 
         .transmit       (transmit_pixel), 
@@ -65,25 +34,30 @@ module top(
     );
 
     // Instance the controller
-    controller u5 (
+    controller controller (
         .clk            (clk), 
         .load_sreg      (load_sreg), 
-        .transmit_pixel (transmit_pixel), 
-        .pixel          (pixel), 
-        .frame          (frame)
+        .transmit_pixel (transmit_pixel),
+        .pixel_value    (pixel_value)
     );
 
     always_ff @(posedge clk) begin
         if (load_sreg) begin
-            unique case ({ SW, BOOT })
-                2'b00:
-                    shift_reg <= { green_data, 16'd0 };
-                2'b01:
-                    shift_reg <= { 8'd0, red_data, 8'd0 };
-                2'b10:
-                    shift_reg <= { 16'd0, blue_data };
-                2'b11:
-                    shift_reg <= { green_data, red_data, blue_data };
+            // unique case ({ SW, BOOT })
+            //     2'b00:
+            //         shift_reg <= { green_data, 16'd0 };
+            //     2'b01:
+            //         shift_reg <= { 8'd0, red_data, 8'd0 };
+            //     2'b10:
+            //         shift_reg <= { 16'd0, blue_data };
+            //     2'b11:
+            //         shift_reg <= { green_data, red_data, blue_data };
+            // endcase
+            case (pixel_value)
+                1'b0:
+                    shift_reg <= {24'd0};
+                1'b1:
+                    shift_reg <= {8'd00000001, 16'd0};
             endcase
         end
         else if (shift) begin

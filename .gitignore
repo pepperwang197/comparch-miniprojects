@@ -4,3 +4,4 @@
 *.bin
 *.vcd
 fade
+led_matrix
